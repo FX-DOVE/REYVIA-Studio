@@ -381,7 +381,7 @@ export default function LandingPage() {
       </nav>
 
       <section className="relative z-10 overflow-hidden pb-24 pt-36 md:pb-36 md:pt-48">
-        <div className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full overflow-hidden md:block">
+        <div className="pointer-events-none absolute inset-0 z-0 block h-full w-full overflow-hidden">
           <video src={HERO_VIDEO} autoPlay loop muted playsInline preload="auto" className="h-full w-full object-cover opacity-60 blur-[0.5px]" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#050608] via-transparent to-[#050608]" />
         </div>
