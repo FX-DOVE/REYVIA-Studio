@@ -7,28 +7,18 @@ import {
   Pause,
   Layers,
   Wand2,
-  Video,
-  Music,
-  Tv,
-  Mic,
   Camera,
   ChevronDown,
   ArrowRight,
   CheckCircle2,
   Sliders,
   Users,
-  Eye,
   FileText,
-  Star,
-  Bot,
   Volume2,
   VolumeX
 } from 'lucide-react';
 
-// Copyright-free public cinematic MP4 video (served locally for instant playback)
-const HERO_VIDEO = "/videos/hero-ambient.mp4";
-const DEMO_VIDEO_1 = "/videos/hero-ambient.mp4";
-const DEMO_VIDEO_2 = "/videos/hero-ambient.mp4";
+const HERO_VIDEO = '/videos/hero-ambient.mp4';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -39,39 +29,73 @@ export default function LandingPage() {
   const [activeDemoTab, setActiveDemoTab] = useState('scene01');
   const [heroMuted, setHeroMuted] = useState(true);
   const [heroPlaying, setHeroPlaying] = useState(true);
+  const [showSignup, setShowSignup] = useState(false);
+  const [signupData, setSignupData] = useState({ name: '', email: '' });
+  const [signupSubmitted, setSignupSubmitted] = useState(false);
   const heroVideoRef = useRef(null);
 
   const [promptInput, setPromptInput] = useState('Make this scene more emotional with dramatic lighting.');
   const [assistantResponse, setAssistantResponse] = useState(
-    'Applying adjustments: Softening key light, adding subtle tear highlight, adjusting focal length to 85mm portrait lens, and lengthening shot hold duration by 1.5 seconds.'
+    'Applying adjustments: softening the key light, adding a subtle tear highlight, and extending the final hold by 1.5 seconds.'
   );
 
-  const DASHBOARD_URL = "https://app.reyvia.com/login";
+  const DASHBOARD_URL = 'https://app.reyvia.com/login';
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 30);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Guarantee hero video playback on load
   useEffect(() => {
     if (heroVideoRef.current) {
-      heroVideoRef.current.play().catch(err => {
-        console.log("Autoplay handled:", err);
-      });
+      heroVideoRef.current.play().catch(() => {});
     }
   }, []);
 
+  useEffect(() => {
+    const elements = document.querySelectorAll('[data-reveal]');
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.14, rootMargin: '0px 0px -30px 0px' }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
+  const handleStartCreating = () => {
+    setShowSignup(true);
+    setSignupSubmitted(false);
+  };
+
+  const handleDashboardLogin = () => {
+    window.location.href = DASHBOARD_URL;
+  };
+
+  const handleSignupSubmit = (event) => {
+    event.preventDefault();
+    setSignupSubmitted(true);
+  };
+
+  const handleExploreStudio = () => {
+    const el = document.getElementById('workflow');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const toggleHeroPlay = () => {
     if (heroVideoRef.current) {
-      if (heroPlaying) {
-        heroVideoRef.current.pause();
-      } else {
-        heroVideoRef.current.play();
-      }
+      if (heroPlaying) heroVideoRef.current.pause();
+      else heroVideoRef.current.play();
       setHeroPlaying(!heroPlaying);
     }
   };
@@ -83,21 +107,21 @@ export default function LandingPage() {
     }
   };
 
-  const handleStartCreating = () => {
-    window.location.href = DASHBOARD_URL;
-  };
-
-  const handleExploreStudio = () => {
-    const el = document.getElementById('demo-workspace');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+  const showcaseVideoPool = [
+    '/videos/showcase-1.mp4',
+    '/videos/showcase-2.mp4',
+    '/videos/showcase-3.mp4',
+    '/videos/showcase-4.mp4',
+    '/videos/showcase-5.mp4',
+    '/videos/showcase-6.mp4'
+  ];
 
   const showcaseItems = [
     {
       id: 1,
       title: 'Neon Odyssey: Cyber 2099',
       category: 'Sci-Fi',
-      videoUrl: "/videos/hero-ambient.mp4",
+      videoUrl: showcaseVideoPool[0],
       poster: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1200&auto=format&fit=crop',
       duration: '02:45',
       desc: 'A cybernetic noir thriller set in futuristic Tokyo.'
@@ -106,7 +130,7 @@ export default function LandingPage() {
       id: 2,
       title: 'The Silent Peak',
       category: 'Documentary',
-      videoUrl: "/videos/showcase-1.mp4",
+      videoUrl: showcaseVideoPool[1],
       poster: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop',
       duration: '04:12',
       desc: 'Exploring the untouched glaciers of Northern Patagonia.'
@@ -115,7 +139,7 @@ export default function LandingPage() {
       id: 3,
       title: 'Sintel: Dragon Realm',
       category: 'Fantasy',
-      videoUrl: "/videos/showcase-2.mp4",
+      videoUrl: showcaseVideoPool[2],
       poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop',
       duration: '03:18',
       desc: 'An epic tale of forgotten magic and ancient dragons.'
@@ -124,7 +148,7 @@ export default function LandingPage() {
       id: 4,
       title: 'Midnight Symphony',
       category: 'Music',
-      videoUrl: "/videos/hero-ambient.mp4",
+      videoUrl: showcaseVideoPool[3],
       poster: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop',
       duration: '03:50',
       desc: 'A surreal visual album for modern orchestrations.'
@@ -133,7 +157,7 @@ export default function LandingPage() {
       id: 5,
       title: 'Shadows in the Mist',
       category: 'Drama',
-      videoUrl: "/videos/showcase-1.mp4",
+      videoUrl: showcaseVideoPool[4],
       poster: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1200&auto=format&fit=crop',
       duration: '01:55',
       desc: 'An intimate character study set in 1950s London.'
@@ -142,7 +166,7 @@ export default function LandingPage() {
       id: 6,
       title: 'Aura Autonomous',
       category: 'Commercial',
-      videoUrl: "/videos/showcase-2.mp4",
+      videoUrl: showcaseVideoPool[5],
       poster: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop',
       duration: '01:00',
       desc: 'Cinematic brand reveal for next-generation electric sports cars.'
@@ -151,322 +175,297 @@ export default function LandingPage() {
 
   const filteredShowcase = activeShowcase === 'all'
     ? showcaseItems
-    : showcaseItems.filter(item => item.category.toLowerCase() === activeShowcase.toLowerCase());
+    : showcaseItems.filter((item) => item.category.toLowerCase() === activeShowcase.toLowerCase());
 
   const faqs = [
     {
       q: 'What is REYVIA Studio?',
-      a: 'REYVIA Studio is an AI-powered creative filmmaking workspace that helps creators, directors, and storytellers transform original concepts and scripts into complete cinematic video productions.'
+      a: 'REYVIA Studio is a cinematic production workspace that helps teams and creators turn concepts into polished visual stories, scene plans, and final motion output.'
     },
     {
       q: 'What does the name REYVIA stand for?',
-      a: 'REYVIA represents our core brand philosophy: Release Your Vision Into Action.'
+      a: 'REYVIA represents our core philosophy: Release Your Vision Into Action.'
     },
     {
       q: 'What can I create with REYVIA Studio?',
-      a: 'You can create short films, feature film concepts, documentaries, music videos, YouTube video series, commercials, visual stories, and talking character videos with full scene and style consistency.'
+      a: 'You can create short films, music videos, documentaries, commercials, branded narratives, and visual stories with consistent characters and cinematic pacing.'
     },
     {
       q: 'Can I start from an existing screenplay or script?',
-      a: 'Yes. You can paste a full script, scene notes, or even a brief story idea. REYVIA Studio automatically parses scenes, dialogue, character descriptions, and visual directions into structured production components.'
+      a: 'Yes. You can import a script, scene outline, or creative brief and turn it into a structured production pipeline with clear visual direction.'
     },
     {
-      q: 'How does character consistency work?',
-      a: 'REYVIA Studio utilizes an advanced multi-angle character anchor system. Once you define a character’s face, hair, clothing, and aesthetic traits, REYVIA maintains their identity across multiple scenes and camera angles.'
+      q: 'How does continuity stay consistent?',
+      a: 'The studio keeps character identity, environment, and visual style anchored across the entire production so each scene feels intentional and cohesive.'
     },
     {
       q: 'Can I edit and direct individual shots?',
-      a: 'Absolutely. You remain in full creative control. You can manually adjust camera angles, focal lengths, lighting, character actions, dialogue timing, and scene beats at any point in the creative process.'
+      a: 'Absolutely. You can refine framing, camera movement, lighting, and performance direction at any stage of the process.'
     },
     {
-      q: 'Is REYVIA suitable for professional YouTube creators & filmmakers?',
-      a: 'Yes. REYVIA Studio is built specifically for creators who need high visual fidelity, structured project management, and rapid scene assembly without sacrificing creative direction.'
+      q: 'Is REYVIA suitable for professional creators?',
+      a: 'Yes. It is designed for filmmakers, creative agencies, and visual storytellers who want premium output without compromising production speed.'
     },
     {
       q: 'How do I get started?',
-      a: 'Click "Start Creating" to access the studio workspace. You can start building your first project in minutes.'
+      a: 'Click Start Creating to enter the studio and begin shaping your first project in minutes.'
     }
   ];
 
+  if (showSignup) {
+    return (
+      <div className="min-h-screen bg-[#050608] text-[#edf3ff] font-sans relative overflow-x-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.18),transparent_30%),radial-gradient(circle_at_bottom,_rgba(168,85,247,0.12),transparent_30%)]" />
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl items-center justify-center px-4 py-16 sm:px-6">
+          <div className="w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b0d15]/90 shadow-[0_30px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+            <div className="border-b border-white/10 px-6 py-5 sm:px-8">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-amber-500 p-[1px]">
+                    <div className="flex h-full w-full items-center justify-center rounded-[11px] bg-[#06070a]">
+                      <LogoMark className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-display text-xl font-black tracking-tight text-white">REYVIA</div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-indigo-400">Waitlist</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowSignup(false)}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-white"
+                >
+                  Back
+                </button>
+              </div>
+            </div>
+
+            <div className="px-6 py-8 sm:px-8">
+              <div className="mb-8 text-center">
+                <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.32em] text-indigo-400">Early access</p>
+                <h1 className="font-display text-3xl font-black text-white sm:text-5xl">Join the waitlist</h1>
+                <p className="mt-3 text-sm text-slate-300 sm:text-base">
+                  Get first access to the REYVIA Studio launch and new cinematic tools.
+                </p>
+              </div>
+
+              {signupSubmitted ? (
+                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-center">
+                  <div className="mb-2 text-3xl">✓</div>
+                  <h2 className="text-xl font-bold text-white">You’re on the list.</h2>
+                  <p className="mt-2 text-sm text-emerald-100">
+                    Thanks, {signupData.name || 'friend'} — we’ll be in touch at {signupData.email || 'your email'}.
+                  </p>
+                  <button
+                    onClick={() => setShowSignup(false)}
+                    className="mt-5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-indigo-600/30 transition-transform hover:scale-[1.02]"
+                  >
+                    Back to home
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSignupSubmit} className="space-y-5">
+                  <div>
+                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-200">Full name</label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={signupData.name}
+                      onChange={(event) => setSignupData({ ...signupData, name: event.target.value })}
+                      placeholder="Your full name"
+                      required
+                      className="w-full rounded-2xl border border-white/10 bg-[#101421] px-4 py-3.5 text-base text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-200">Email</label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={signupData.email}
+                      onChange={(event) => setSignupData({ ...signupData, email: event.target.value })}
+                      placeholder="you@example.com"
+                      required
+                      className="w-full rounded-2xl border border-white/10 bg-[#101421] px-4 py-3.5 text-base text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 px-6 py-3.5 text-base font-bold text-white shadow-2xl shadow-indigo-600/40 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                  >
+                    Join the waitlist
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#050608] text-[#e4e4f4] font-sans selection:bg-indigo-500/30 selection:text-white relative overflow-x-hidden">
-      {/* ─── MOVING BACKGROUND VECTOR SHAPES & DYNAMIC PARTICLES ─── */}
+    <div className="min-h-screen bg-[#050608] text-[#edf3ff] font-sans relative overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Vector Particle 1: Floating Glowing Crosshair */}
-        <div className="absolute top-[15%] left-[8%] animate-[float_18s_ease-in-out_infinite] opacity-30">
+        <div className="absolute left-[8%] top-[15%] animate-[float_18s_ease-in-out_infinite] opacity-30">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-            <circle cx="20" cy="20" r="18" stroke="#6366f1" strokeWidth="1" strokeDasharray="4 4" />
+            <circle cx="20" cy="20" r="18" stroke="#6d7cff" strokeWidth="1" strokeDasharray="4 4" />
             <path d="M20 5V35M5 20H35" stroke="#8b5cf6" strokeWidth="1" />
           </svg>
         </div>
-
-        {/* Vector Particle 2: Floating Polygon Lens Frame */}
-        <div className="absolute top-[45%] right-[10%] animate-[float_22s_ease-in-out_infinite_reverse] opacity-25">
+        <div className="absolute right-[10%] top-[45%] animate-[float_22s_ease-in-out_infinite_reverse] opacity-25">
           <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-            <polygon points="30,5 55,20 55,50 30,55 5,50 5,20" stroke="#f59e0b" strokeWidth="1" />
-            <circle cx="30" cy="30" r="8" fill="#6366f1" fillOpacity="0.2" />
+            <polygon points="30,5 55,20 55,50 30,55 5,50 5,20" stroke="#f5c76b" strokeWidth="1" />
+            <circle cx="30" cy="30" r="8" fill="#6d7cff" fillOpacity="0.2" />
           </svg>
         </div>
-
-        {/* Vector Particle 3: Floating Aperture Ring */}
         <div className="absolute bottom-[20%] left-[12%] animate-[float_25s_ease-in-out_infinite] opacity-20">
           <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-            <circle cx="40" cy="40" r="35" stroke="#a855f7" strokeWidth="1" />
-            <path d="M40 5L40 25M75 40L55 40M40 75L40 55M5 40L25 40" stroke="#6366f1" strokeWidth="1" />
+            <circle cx="40" cy="40" r="35" stroke="#8b5cf6" strokeWidth="1" />
+            <path d="M40 5L40 25M75 40L55 40M40 75L40 55M5 40L25 40" stroke="#6d7cff" strokeWidth="1" />
           </svg>
         </div>
-
-        {/* Vector Particle 4: Floating Film Sprocket */}
-        <div className="absolute top-[75%] right-[15%] animate-[float_20s_ease-in-out_infinite] opacity-25">
-          <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-            <rect x="5" y="5" width="40" height="40" rx="8" stroke="#8b5cf6" strokeWidth="1" />
-            <rect x="12" y="12" width="8" height="8" rx="2" fill="#6366f1" fillOpacity="0.4" />
-            <rect x="30" y="12" width="8" height="8" rx="2" fill="#6366f1" fillOpacity="0.4" />
-            <rect x="12" y="30" width="8" height="8" rx="2" fill="#6366f1" fillOpacity="0.4" />
-            <rect x="30" y="30" width="8" height="8" rx="2" fill="#6366f1" fillOpacity="0.4" />
-          </svg>
-        </div>
-
-        {/* Subtle Background Grid Line */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:5rem_5rem]" />
       </div>
 
-      {/* ─── NAVIGATION ─────────────────────────────────────────── */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? 'bg-[#06070a]/90 backdrop-blur-xl border-b border-white/10 py-3.5 shadow-2xl shadow-black/90'
-            : 'bg-transparent py-6'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-amber-500 p-[1px] flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full bg-[#06070a] rounded-[11px] flex items-center justify-center">
-                <Clapperboard className="w-5 h-5 text-indigo-400 group-hover:rotate-12 transition-transform duration-300" />
+      <nav className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${scrolled ? 'border-b border-white/10 bg-[#06070a]/90 py-3.5 shadow-2xl shadow-black/90 backdrop-blur-xl' : 'bg-transparent py-6'}`}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="header-brand group flex cursor-pointer items-center gap-3" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-amber-500 p-[1px] shadow-lg shadow-indigo-500/20 transition-transform duration-300 group-hover:scale-105">
+              <div className="flex h-full w-full items-center justify-center rounded-[11px] bg-[#06070a]">
+                <LogoMark className="h-6 w-6" />
               </div>
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-display text-2xl font-black tracking-tight text-white group-hover:text-indigo-200 transition-colors">REYVIA</span>
-              <span className="text-[11px] font-mono tracking-widest text-indigo-400 uppercase font-semibold">Studio</span>
+            <div className="flex min-w-0 items-baseline gap-1.5">
+              <span className="brand-wordmark font-display text-2xl font-black tracking-tight text-white transition-colors group-hover:text-indigo-200">REYVIA</span>
+              <span className="brand-sub font-mono text-[11px] uppercase tracking-widest text-indigo-400">Studio</span>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            {['features', 'workflow', 'modes', 'showcase', 'faq'].map((item) => (
-              <a
-                key={item}
-                href={`#${item}`}
-                className="capitalize hover:text-white transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-indigo-500 hover:after:w-full after:transition-all"
-              >
-                {item}
-              </a>
+          <div className="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex">
+            {['features', 'workflow', 'showcase', 'faq'].map((item) => (
+              <a key={item} href={`#${item}`} className="relative py-1 capitalize transition-colors hover:text-white after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-indigo-500 after:transition-all hover:after:w-full">{item}</a>
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={handleStartCreating}
-              className="text-sm font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={handleStartCreating}
-              className="group relative inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 text-white font-semibold text-sm shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300"
-            >
+          <div className="hidden items-center gap-4 md:flex">
+            <button onClick={handleDashboardLogin} className="px-3 py-2 text-sm font-semibold text-slate-300 transition-colors hover:text-white">Sign In</button>
+            <button onClick={handleStartCreating} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 px-6 py-2.5 text-sm font-semibold text-white shadow-xl shadow-indigo-600/30 transition-all duration-300 hover:scale-[1.03] hover:shadow-indigo-600/50 active:scale-[0.97]">
               <span>Start Creating</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2.5 rounded-xl text-slate-300 hover:text-white bg-white/5 border border-white/10"
-          >
-            <div className="w-5 h-4 flex flex-col justify-between">
-              <span className={`w-full h-0.5 bg-current transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
-              <span className={`w-full h-0.5 bg-current transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`w-full h-0.5 bg-current transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-slate-300 hover:text-white md:hidden">
+            <div className="flex h-4 w-5 flex-col justify-between">
+              <span className={`h-0.5 w-full bg-current transition-all duration-300 ${mobileMenuOpen ? 'translate-y-1.5 rotate-45' : ''}`} />
+              <span className={`h-0.5 w-full bg-current transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`h-0.5 w-full bg-current transition-all duration-300 ${mobileMenuOpen ? '-translate-y-1.5 -rotate-45' : ''}`} />
             </div>
           </button>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#090a10] border-b border-white/10 px-6 py-6 space-y-4 shadow-2xl animate-in fade-in duration-200">
-            {['features', 'workflow', 'modes', 'showcase', 'faq'].map((item) => (
-              <a
-                key={item}
-                href={`#${item}`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-300 hover:text-white py-2 text-base capitalize font-medium"
-              >
-                {item}
-              </a>
+          <div className="space-y-4 border-b border-white/10 bg-[#090a10] px-6 py-6 shadow-2xl md:hidden">
+            {['features', 'workflow', 'showcase', 'faq'].map((item) => (
+              <a key={item} href={`#${item}`} onClick={() => setMobileMenuOpen(false)} className="block py-2 text-base font-medium capitalize text-slate-300 hover:text-white">{item}</a>
             ))}
-            <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
-              <button
-                onClick={handleStartCreating}
-                className="w-full py-3 rounded-xl border border-white/10 text-slate-200 font-medium text-sm"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={handleStartCreating}
-                className="w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30"
-              >
-                Start Creating
-              </button>
+            <div className="flex flex-col gap-3 border-t border-white/10 pt-4">
+              <button onClick={handleDashboardLogin} className="w-full rounded-xl border border-white/10 py-3 text-sm font-medium text-slate-200">Sign In</button>
+              <button onClick={handleStartCreating} className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30">Start Creating</button>
             </div>
           </div>
         )}
       </nav>
 
-      {/* ─── HERO SECTION ────────────────────────────────────────── */}
-      <section className="relative pt-36 pb-24 md:pt-48 md:pb-36 overflow-hidden z-10">
-        {/* Dimmed Ambient Desktop Video Background (Opacity 40%) */}
-        <div className="hidden md:block absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          <video
-            src="/videos/hero-ambient.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover opacity-40 filter blur-[0.5px]"
-          />
+      <section className="relative z-10 overflow-hidden pb-24 pt-36 md:pb-36 md:pt-48">
+        <div className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full overflow-hidden md:block">
+          <video src={HERO_VIDEO} autoPlay loop muted playsInline preload="auto" className="h-full w-full object-cover opacity-60 blur-[0.5px]" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#050608] via-transparent to-[#050608]" />
         </div>
+        <div className="pointer-events-none absolute left-1/2 top-1/4 h-[450px] w-[750px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-indigo-600/30 via-purple-600/20 to-amber-500/15 blur-[150px]" />
 
-        {/* Soft Glowing Atmosphere */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[450px] bg-gradient-to-tr from-indigo-600/30 via-purple-600/20 to-amber-500/15 blur-[150px] rounded-full pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.04] max-w-5xl mx-auto mb-6">
-            Turn Your Ideas <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-white via-indigo-100 via-purple-200 to-amber-200 bg-clip-text text-transparent">
-              Into Cinema.
-            </span>
+        <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <h1 data-reveal className="mx-auto mb-6 max-w-5xl font-display text-5xl font-black leading-[1.04] tracking-tight text-white sm:text-7xl lg:text-8xl">
+            Turn your ideas <br className="hidden sm:block" />
+            <span className="bg-gradient-to-r from-white via-indigo-100 via-purple-200 to-amber-200 bg-clip-text text-transparent">into cinema.</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-            Intelligent AI workspace to develop stories, direct characters, and generate complete video productions.
+          <p data-reveal className="mx-auto mb-10 max-w-2xl text-lg font-normal text-slate-300 sm:text-xl">
+            Craft stories, direct scenes, and generate polished cinematic video in one elegant production workspace.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-20">
-            <button
-              onClick={handleStartCreating}
-              className="w-full sm:w-auto px-9 py-4.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 text-white font-bold text-base shadow-2xl shadow-indigo-600/40 hover:shadow-indigo-600/60 hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5"
-            >
-              <Sparkles className="w-5 h-5 text-amber-300" />
+          <div data-reveal className="mb-20 flex flex-col items-center justify-center gap-5 sm:flex-row">
+            <button onClick={handleStartCreating} className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 px-9 py-4.5 text-base font-bold text-white shadow-2xl shadow-indigo-600/40 transition-all hover:scale-[1.03] hover:shadow-indigo-600/60 active:scale-[0.98] sm:w-auto">
+              <Sparkles className="h-5 w-5 text-amber-300" />
               <span>Start Creating</span>
             </button>
-            <button
-              onClick={handleExploreStudio}
-              className="w-full sm:w-auto px-9 py-4.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-base backdrop-blur-md hover:border-white/30 transition-all flex items-center justify-center gap-2.5"
-            >
-              <Play className="w-4 h-4 fill-current text-indigo-400" />
+            <button onClick={handleExploreStudio} className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-white/15 bg-white/5 px-9 py-4.5 text-base font-bold text-slate-200 backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/10 sm:w-auto">
+              <Play className="h-4 w-4 fill-current text-indigo-400" />
               <span>Explore Studio</span>
             </button>
           </div>
 
-          {/* ─── HERO VISUAL WITH GUARANTEED AUTO-PLAYING CORNS VIDEO ─── */}
-          <div className="relative max-w-5xl mx-auto rounded-3xl p-1 bg-gradient-to-b from-white/20 via-white/5 to-transparent border border-white/15 shadow-2xl shadow-black">
-            <div className="bg-[#0b0c13] rounded-2xl overflow-hidden relative">
-              {/* Header Bar */}
-              <div className="px-5 py-3.5 bg-[#0d0e17] border-b border-white/10 flex items-center justify-between text-xs text-slate-400 font-mono">
+          <div data-reveal className="mx-auto max-w-5xl rounded-3xl border border-white/15 bg-gradient-to-b from-white/20 via-white/5 to-transparent p-1 shadow-2xl shadow-black">
+            <div className="overflow-hidden rounded-2xl bg-[#0b0c13]">
+              <div className="flex items-center justify-between border-b border-white/10 bg-[#0d0e17] px-5 py-3.5 text-xs font-mono text-slate-400">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-green-500/80 inline-block" />
-                  <span className="text-slate-300 ml-2 font-bold">REYVIA Studio // Project_Cinematic_Ocean.rey</span>
+                  <span className="inline-block h-3 w-3 rounded-full bg-red-500/80" />
+                  <span className="inline-block h-3 w-3 rounded-full bg-yellow-500/80" />
+                  <span className="inline-block h-3 w-3 rounded-full bg-green-500/80" />
+                  <span className="ml-2 font-bold text-slate-300">REYVIA Studio // Project_Cinematic_Ocean.rey</span>
                 </div>
                 <div className="flex items-center gap-4 text-[11px] text-indigo-300">
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" /> Live 4K Render</span>
-                  <span className="bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded font-bold">24 FPS</span>
+                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 animate-ping rounded-full bg-emerald-400" /> Live 4K Render</span>
+                  <span className="rounded bg-indigo-500/20 px-2 py-0.5 font-bold text-indigo-300">24 FPS</span>
                 </div>
               </div>
 
-              {/* Multi-step Pipeline Header */}
-              <div className="p-4 md:p-6 grid grid-cols-2 md:grid-cols-6 gap-3 border-b border-white/10 bg-[#090a10]">
+              <div className="studio-pipeline-grid border-b border-white/10 bg-[#090a10] p-3 md:p-6">
                 {[
-                  { step: '01', title: 'IDEA', desc: 'Logline & Concept', icon: Wand2, active: false },
-                  { step: '02', title: 'STORY', desc: 'Script Breakdown', icon: FileText, active: false },
-                  { step: '03', title: 'CHARACTERS', desc: 'Identity Anchor', icon: Users, active: false },
-                  { step: '04', title: 'SCENES', desc: 'Director Board', icon: Layers, active: false },
-                  { step: '05', title: 'VIDEO', desc: 'Cinematic Motion', icon: Camera, active: true },
-                  { step: '06', title: 'FINAL FILM', desc: 'Master Export', icon: Film, active: false }
+                  { step: '01', title: 'IDEA', desc: 'Logline & concept', icon: Wand2, active: false },
+                  { step: '02', title: 'STORY', desc: 'Script breakdown', icon: FileText, active: false },
+                  { step: '03', title: 'CHARACTERS', desc: 'Identity anchor', icon: Users, active: false },
+                  { step: '04', title: 'SCENES', desc: 'Director board', icon: Layers, active: false },
+                  { step: '05', title: 'VIDEO', desc: 'Cinematic motion', icon: Camera, active: true },
+                  { step: '06', title: 'FINAL FILM', desc: 'Master export', icon: Film, active: false }
                 ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-3.5 rounded-xl border text-left transition-all ${
-                      item.active
-                        ? 'bg-indigo-600/25 border-indigo-500/60 text-white shadow-lg shadow-indigo-500/20'
-                        : 'bg-white/[0.02] border-white/5 text-slate-400'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono text-[10px] text-indigo-400 font-bold">{item.step}</span>
-                      <item.icon className={`w-3.5 h-3.5 ${item.active ? 'text-amber-400' : 'text-slate-500'}`} />
+                  <div key={idx} className={`pipeline-card ${item.active ? 'active' : ''}`}>
+                    <div className="pipeline-topline">
+                      <span className="pipeline-step">{item.step}</span>
+                      <item.icon className="pipeline-icon" />
                     </div>
-                    <div className="font-display text-xs font-bold text-slate-200">{item.title}</div>
-                    <div className="text-[10px] text-slate-400 truncate">{item.desc}</div>
+                    <div className="pipeline-title">{item.title}</div>
+                    <div className="pipeline-desc">{item.desc}</div>
                   </div>
                 ))}
               </div>
 
-              {/* HIGHLY RELIABLE AUTO-PLAYING VIDEO MONITOR */}
-              <div className="relative aspect-video w-full bg-[#050609] overflow-hidden group">
-                <video
-                  ref={heroVideoRef}
-                  src={HERO_VIDEO}
-                  autoPlay
-                  loop
-                  muted={heroMuted}
-                  playsInline
-                  preload="auto"
-                  className="w-full h-full object-cover"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07080c] via-transparent to-black/30 pointer-events-none" />
-
-                {/* On-screen Controls Overlay */}
-                <div className="absolute top-4 left-4 flex items-center gap-3">
-                  <div className="bg-black/75 backdrop-blur-md border border-white/15 px-3.5 py-1.5 rounded-xl text-xs font-mono text-slate-200 flex items-center gap-2">
-                    <Camera className="w-3.5 h-3.5 text-indigo-400" />
+              <div className="group relative aspect-video w-full overflow-hidden bg-[#050609]">
+                <video ref={heroVideoRef} src={HERO_VIDEO} autoPlay loop muted={heroMuted} playsInline preload="auto" className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07080c] via-transparent to-black/30" />
+                <div className="absolute left-4 top-4 flex items-center gap-3">
+                  <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-black/75 px-3.5 py-1.5 text-xs font-mono text-slate-200 backdrop-blur-md">
+                    <Camera className="h-3.5 w-3.5 text-indigo-400" />
                     <span>Shot 05 // Cam A — 35mm Anamorphic T1.8</span>
                   </div>
                 </div>
-
-                <div className="absolute top-4 right-4 flex items-center gap-2">
-                  <button
-                    onClick={toggleHeroPlay}
-                    className="p-2.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/15 text-white hover:bg-black/90 transition-colors"
-                  >
-                    {heroPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
-                  </button>
-                  <button
-                    onClick={toggleHeroMute}
-                    className="p-2.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/15 text-white hover:bg-black/90 transition-colors"
-                  >
-                    {heroMuted ? <VolumeX className="w-4 h-4 text-amber-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-                  </button>
+                <div className="absolute right-4 top-4 flex items-center gap-2">
+                  <button onClick={toggleHeroPlay} className="rounded-xl border border-white/15 bg-black/75 p-2.5 text-white transition-colors hover:bg-black/90">{heroPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 fill-current" />}</button>
+                  <button onClick={toggleHeroMute} className="rounded-xl border border-white/15 bg-black/75 p-2.5 text-white transition-colors hover:bg-black/90">{heroMuted ? <VolumeX className="h-4 w-4 text-amber-400" /> : <Volume2 className="h-4 w-4 text-emerald-400" />}</button>
                 </div>
-
-                <div className="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
-                  <div className="bg-black/85 backdrop-blur-md border border-white/15 p-4 sm:p-5 rounded-2xl max-w-xl text-left shadow-2xl">
-                    <div className="flex items-center gap-2 text-indigo-400 text-xs font-mono mb-1.5 font-bold">
-                      <span>SCENE 05</span>
-                      <span>•</span>
-                      <span>CYBERPUNK OCEAN</span>
-                      <span>•</span>
-                      <span className="text-amber-400">CHARACTER: KIRA</span>
+                <div className="absolute bottom-4 left-4 right-4 flex flex-col items-start justify-between gap-3 md:bottom-6 md:left-6 md:right-6 md:flex-row md:items-end">
+                  <div className="scene-overlay-card max-w-xl">
+                    <div className="scene-meta-row">
+                      <span className="scene-tag">SCENE 05</span>
+                      <span className="scene-dot">•</span>
+                      <span className="scene-label">CYBERPUNK OCEAN</span>
+                      <span className="scene-dot">•</span>
+                      <span className="scene-character">CHARACTER: KIRA</span>
                     </div>
-                    <p className="text-sm sm:text-base text-slate-100 font-medium leading-snug">
-                      "Kira looks out into the expansive dark waters as sunlight glimmers across the waves."
-                    </p>
+                    <p className="scene-script">“Kira looks out into the expansive dark waters as sunlight glimmers across the waves.”</p>
                   </div>
                 </div>
               </div>
@@ -475,300 +474,96 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── VALUE PROPOSITION ────────────────────────────────────── */}
-      <section id="features" className="py-28 bg-[#07080e] border-t border-b border-white/5 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">Built For Directors</span>
-            <h2 className="font-display text-4xl sm:text-6xl font-black text-white mt-3 mb-6">
-              Everything You Need to Direct & Produce
-            </h2>
-            <p className="text-slate-300 text-lg sm:text-xl">
-              Structured workspace tools designed specifically to bridge the gap between creative intent and final visual storytelling.
-            </p>
+      <section id="features" className="relative z-10 border-y border-white/5 bg-[#07080e] py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mx-auto mb-20 max-w-3xl text-center">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400">Built for directors</span>
+            <h2 className="mt-3 mb-6 font-display text-4xl font-black text-white sm:text-6xl">Everything you need to direct and produce.</h2>
+            <p className="text-lg text-slate-300 sm:text-xl">A disciplined creative toolkit for moving from concept to final frame with precision and atmosphere.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mobile-card-grid grid grid-cols-1 gap-8 md:grid-cols-3">
             {[
-              {
-                icon: Wand2,
-                title: 'Create',
-                subtitle: 'Idea to Screenplay',
-                desc: 'Turn concepts, outlines, or complete scripts into structured visual stories broken down by acts, scenes, and beats.'
-              },
-              {
-                icon: Sliders,
-                title: 'Direct',
-                subtitle: 'Full Shot Control',
-                desc: 'Control characters, scenes, camera motion, dialogue, atmospheric lighting, and overarching visual styles.'
-              },
-              {
-                icon: Film,
-                title: 'Produce',
-                subtitle: 'Complete Cinema',
-                desc: 'Bring scenes together into cohesive, high-definition video productions ready for audience premiere.'
-              }
-            ].map((prop, idx) => (
-              <div
-                key={idx}
-                className="group relative p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-indigo-500/50 transition-all duration-500 hover:-translate-y-2 shadow-2xl hover:shadow-indigo-500/10"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
-                  <prop.icon className="w-7 h-7 text-indigo-400" />
+              { icon: Wand2, title: 'Create', subtitle: 'Idea to screenplay', desc: 'Turn concepts, outlines, or scripts into structured visual stories with emotion, pacing, and clear scene intent.' },
+              { icon: Sliders, title: 'Direct', subtitle: 'Full shot control', desc: 'Shape camera movement, lighting mood, character behavior, and scene rhythm with tactile creative controls.' },
+              { icon: Film, title: 'Produce', subtitle: 'Cinematic output', desc: 'Merge shots into polished sequences ready for release with cinematic grading, continuity, and export workflows.' }
+            ].map((item, idx) => (
+              <div data-reveal key={idx} className="group min-w-0 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-8 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-indigo-500/50 hover:shadow-indigo-500/10 sm:p-10">
+                <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-500/10 transition-transform duration-300 group-hover:scale-110">
+                  <item.icon className="h-7 w-7 text-indigo-400" />
                 </div>
-                <div className="text-xs font-mono uppercase text-indigo-400 font-bold mb-2 tracking-wider">{prop.subtitle}</div>
-                <h3 className="font-display text-3xl font-bold text-white mb-4">{prop.title}</h3>
-                <p className="text-slate-300 text-base leading-relaxed">{prop.desc}</p>
+                <div className="mb-2 text-xs font-mono uppercase tracking-wider text-indigo-400">{item.subtitle}</div>
+                <h3 className="mb-4 font-display text-3xl font-bold text-white">{item.title}</h3>
+                <p className="text-base leading-relaxed text-slate-300">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── INTERACTIVE STUDIO WORKSPACE WITH REAL VIDEO PREVIEWS ──── */}
-      <section id="demo-workspace" className="py-28 relative overflow-hidden bg-[#050608]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">Interactive Studio</span>
-            <h2 className="font-display text-4xl sm:text-6xl font-black text-white mt-3 mb-6">
-              Explore the REYVIA Workspace
-            </h2>
-            <p className="text-slate-300 text-lg sm:text-xl">
-              A comprehensive studio designed for directors, editors, and visual artists.
-            </p>
+      <section id="workflow" className="relative overflow-hidden bg-[#050608] py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mx-auto mb-16 max-w-3xl text-center">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400">Creative workflow</span>
+            <h2 className="mt-3 mb-6 font-display text-4xl font-black text-white sm:text-6xl">A studio built for cinematic thinking.</h2>
+            <p className="text-lg text-slate-300 sm:text-xl">Direct each phase of production with structure, visual control, and a cinematic point of view.</p>
           </div>
 
-          {/* Interactive Workspace Mockup */}
-          <div className="rounded-3xl border border-white/15 bg-[#090a12] overflow-hidden shadow-2xl shadow-black grid grid-cols-1 lg:grid-cols-12 min-h-[550px]">
-            {/* LEFT PANEL: Project Structure */}
-            <div className="lg:col-span-3 p-5 border-r border-white/10 bg-[#07080e] space-y-4">
-              <div className="text-xs font-mono text-slate-400 font-bold uppercase pb-3 border-b border-white/10 flex justify-between items-center">
-                <span>Project Structure</span>
-                <span className="text-indigo-400 text-[10px]">REYVIA v2.4</span>
-              </div>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="p-3 rounded-xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-200 font-bold flex items-center gap-2.5">
-                  <Film className="w-4 h-4 text-indigo-400" /> Episode 01: Sintel's Journey
-                </div>
-                <div className="pl-3 space-y-1 text-slate-300">
-                  <div className="p-2 rounded-lg hover:bg-white/5 cursor-pointer flex items-center justify-between">
-                    <span>Act 01: The Mountain Gate</span>
-                  </div>
-                  <div className="pl-4 space-y-1.5">
-                    <button
-                      onClick={() => setActiveDemoTab('scene01')}
-                      className={`w-full text-left p-2.5 rounded-xl transition-all flex items-center justify-between ${
-                        activeDemoTab === 'scene01' ? 'bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30' : 'hover:bg-white/5 text-slate-400'
-                      }`}
-                    >
-                      <span>Scene 01: Sintel Dragon</span>
-                      <span className="text-[10px] text-emerald-400 font-bold">READY</span>
-                    </button>
-                    <button
-                      onClick={() => setActiveDemoTab('scene02')}
-                      className={`w-full text-left p-2.5 rounded-xl transition-all flex items-center justify-between ${
-                        activeDemoTab === 'scene02' ? 'bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30' : 'hover:bg-white/5 text-slate-400'
-                      }`}
-                    >
-                      <span>Scene 02: Ocean Horizon</span>
-                      <span className="text-[10px] text-amber-400 font-bold">RENDERING</span>
-                    </button>
+          <div className="mobile-card-grid grid grid-cols-1 gap-8 lg:grid-cols-3">
+            {[
+              { phase: 'Phase 01', title: 'Concept', items: ['Translate an idea into story beats and visual direction.', 'Shape color, mood, framing, and emotional tone.', 'Build your narrative foundation before you render.'], icon: Wand2 },
+              { phase: 'Phase 02', title: 'Shot craft', items: ['Direct framing, depth, motion, and lens behavior.', 'Preserve character continuity across every scene.', 'Iterate quickly without losing creative intent.'], icon: Camera },
+              { phase: 'Phase 03', title: 'Final cut', items: ['Assemble scenes into a rhythmic cinematic sequence.', 'Polish sound, pacing, and visual grading for release.', 'Deliver a premium final product on a modern production timeline.'], icon: Film }
+            ].map((card, idx) => (
+              <div data-reveal key={idx} className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-500/10"><card.icon className="h-5 w-5 text-indigo-300" /></div>
+                  <div>
+                    <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-indigo-300">{card.phase}</p>
+                    <h3 className="text-xl font-bold text-white">{card.title}</h3>
                   </div>
                 </div>
+                <ul className="space-y-3 text-sm text-slate-300">
+                  {card.items.map((item, i) => (
+                    <li key={i} className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400" /> {item}</li>
+                  ))}
+                </ul>
               </div>
-            </div>
-
-            {/* CENTER PANEL: Embedded MP4 Video Preview */}
-            <div className="lg:col-span-6 p-6 bg-[#040508] flex flex-col justify-between">
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-white/10 group shadow-2xl">
-                <video
-                  key={activeDemoTab}
-                  src={activeDemoTab === 'scene01' ? DEMO_VIDEO_1 : DEMO_VIDEO_2}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-                <div className="flex items-center gap-4">
-                  <span>00:01:24:12</span>
-                  <div className="w-44 h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div className="w-3/4 h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" />
-                  </div>
-                  <span>00:03:45:00</span>
-                </div>
-                <span className="bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded font-bold">4K Cinema Ready</span>
-              </div>
-            </div>
-
-            {/* RIGHT PANEL: Shot Controls */}
-            <div className="lg:col-span-3 p-5 border-l border-white/10 bg-[#07080e] space-y-4">
-              <div className="text-xs font-mono text-slate-400 font-bold uppercase pb-3 border-b border-white/10">Shot Direction</div>
-
-              <div className="space-y-4 text-xs">
-                <div>
-                  <label className="text-slate-400 block mb-1.5 font-mono">ACTIVE CHARACTER</label>
-                  <input type="text" readOnly value="Sintel / Dragon" className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-medium" />
-                </div>
-                <div>
-                  <label className="text-slate-400 block mb-1.5 font-mono">CAMERA ANGLE</label>
-                  <input type="text" readOnly value="Low Angle Push-in 35mm" className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-200" />
-                </div>
-                <div>
-                  <label className="text-slate-400 block mb-1.5 font-mono">ATMOSPHERE</label>
-                  <input type="text" readOnly value="Atmospheric Mountain Fog" className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-200" />
-                </div>
-                <button
-                  onClick={handleStartCreating}
-                  className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs mt-4 transition-colors shadow-lg shadow-indigo-600/30"
-                >
-                  Edit In Workspace
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ─── AI ASSISTANT ───────────────────────────────────────── */}
-      <section className="py-28 bg-[#07080e] border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">Creative Partner</span>
-              <h2 className="font-display text-4xl sm:text-6xl font-black text-white mt-3 mb-6">
-                Your Creative Partner.
-              </h2>
-              <p className="text-slate-300 text-lg leading-relaxed mb-8">
-                Collaborate with REYVIA Studio to refine dialogue, adjust camera angles, enhance character performances, or solve scene continuity challenges.
-              </p>
-
-              <div className="space-y-4">
-                {[
-                  'Rewrite dialogue for specific emotional tone',
-                  'Suggest dramatic camera moves & lighting schemes',
-                  'Fix scene-to-scene plot and visual continuity',
-                  'Generate alternative scene endings & beats'
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 text-slate-200 text-base font-medium">
-                    <Bot className="w-5 h-5 text-indigo-400 flex-shrink-0" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="p-6 sm:p-8 rounded-3xl bg-[#0c0d16] border border-white/15 shadow-2xl space-y-5">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 text-xs font-mono text-indigo-400 font-bold">
-                <span className="flex items-center gap-2"><Bot className="w-4 h-4" /> REYVIA Assistant</span>
-                <span className="text-emerald-400">ACTIVE</span>
-              </div>
-
-              {/* User Prompt */}
-              <div className="flex items-start gap-3 justify-end">
-                <div className="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-none text-xs sm:text-sm max-w-md shadow-lg">
-                  "{promptInput}"
-                </div>
-              </div>
-
-              {/* Assistant Response */}
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 flex-shrink-0">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div className="bg-white/5 border border-white/10 text-slate-200 p-4 rounded-2xl rounded-tl-none text-xs sm:text-sm max-w-md">
-                  {assistantResponse}
-                </div>
-              </div>
-
-              <div className="pt-3 flex gap-3">
-                <input
-                  type="text"
-                  value={promptInput}
-                  onChange={(e) => setPromptInput(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-xl bg-black/60 border border-white/15 text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500"
-                />
-                <button
-                  onClick={() => {
-                    setAssistantResponse('Applying adjustments: Softening key light, adding subtle tear highlight, and lengthening shot hold duration by 1.5 seconds.');
-                  }}
-                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold transition-colors shadow-lg shadow-indigo-600/30"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SHOWCASE WITH EMBEDDED VIDEO MODAL ─────────────────────── */}
-      <section id="showcase" className="py-28 bg-[#050608] border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">Studio Showcase</span>
-            <h2 className="font-display text-4xl sm:text-6xl font-black text-white mt-3 mb-6">
-              Created With REYVIA Studio
-            </h2>
-            <p className="text-slate-300 text-lg sm:text-xl">
-              Explore productions across genres created entirely within the workspace.
-            </p>
-
-            {/* Filter Chips */}
-            <div className="flex flex-wrap justify-center gap-3 mt-10">
+      <section id="showcase" className="border-t border-white/5 bg-[#050608] py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mx-auto mb-16 max-w-3xl text-center">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400">Studio showcase</span>
+            <h2 className="mt-3 mb-6 font-display text-4xl font-black text-white sm:text-6xl">Created with REYVIA.</h2>
+            <p className="text-lg text-slate-300 sm:text-xl">A curated set of cinematic stories across story-driven genres and commercial applications.</p>
+            <div className="mt-10 flex flex-wrap justify-center gap-3">
               {['all', 'Sci-Fi', 'Documentary', 'Fantasy', 'Music', 'Drama', 'Commercial'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveShowcase(cat)}
-                  className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
-                    activeShowcase === cat
-                      ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/40'
-                      : 'bg-white/5 text-slate-400 hover:text-white border border-white/10'
-                  }`}
-                >
+                <button key={cat} onClick={() => setActiveShowcase(cat)} className={`rounded-full px-5 py-2 text-xs font-bold transition-all ${activeShowcase === cat ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/40' : 'border border-white/10 bg-white/5 text-slate-400 hover:text-white'}`}>
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mobile-card-grid grid grid-cols-1 gap-8 md:grid-cols-3">
             {filteredShowcase.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setModalVideo(item)}
-                className="group relative rounded-3xl overflow-hidden bg-[#0c0d16] border border-white/10 hover:border-indigo-500/60 transition-all duration-500 cursor-pointer shadow-2xl hover:-translate-y-1.5"
-              >
-                <div className="aspect-video w-full overflow-hidden relative">
-                  <img
-                    src={item.poster}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
+              <div data-reveal key={item.id} onClick={() => setModalVideo(item)} className="group min-w-0 cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-[#0c0d16] shadow-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-indigo-500/60">
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <img src={item.poster} alt={item.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                  <div className="absolute top-4 left-4 px-3 py-1 rounded-lg bg-black/75 backdrop-blur-md text-[11px] font-mono text-indigo-300 font-bold border border-white/15">
-                    {item.category}
-                  </div>
-                  <div className="absolute top-4 right-4 px-3 py-1 rounded-lg bg-black/75 backdrop-blur-md text-[11px] font-mono text-slate-200 border border-white/15">
-                    {item.duration}
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-indigo-600/60">
-                      <Play className="w-6 h-6 fill-current ml-1" />
-                    </div>
+                  <div className="absolute left-4 top-4 rounded-lg border border-white/15 bg-black/75 px-3 py-1 font-mono text-[11px] font-bold text-indigo-300 backdrop-blur-md">{item.category}</div>
+                  <div className="absolute right-4 top-4 rounded-lg border border-white/15 bg-black/75 px-3 py-1 font-mono text-[11px] text-slate-200 backdrop-blur-md">{item.duration}</div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-2xl shadow-indigo-600/60"><Play className="ml-1 h-6 w-6 fill-current" /></div>
                   </div>
                 </div>
-
                 <div className="p-6">
-                  <h3 className="font-display text-xl font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 line-clamp-2">{item.desc}</p>
+                  <h3 className="showcase-heading mb-2 font-display text-xl font-bold text-white transition-colors group-hover:text-indigo-300">{item.title}</h3>
+                  <p className="text-xs text-slate-400 sm:text-sm">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -776,128 +571,96 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Video Modal */}
       {modalVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
-          <div className="relative w-full max-w-4xl rounded-3xl bg-[#090a12] border border-white/15 overflow-hidden shadow-2xl">
-            <div className="flex justify-between items-center px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-xl">
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/15 bg-[#090a12] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
               <div>
                 <h3 className="text-lg font-bold text-white">{modalVideo.title}</h3>
-                <span className="text-xs font-mono text-indigo-400">{modalVideo.category} • {modalVideo.duration}</span>
+                <span className="font-mono text-xs text-indigo-400">{modalVideo.category} • {modalVideo.duration}</span>
               </div>
-              <button
-                onClick={() => setModalVideo(null)}
-                className="text-slate-400 hover:text-white p-2 rounded-xl bg-white/5"
-              >
-                ✕
-              </button>
+              <button onClick={() => setModalVideo(null)} className="rounded-xl bg-white/5 p-2 text-slate-400 hover:text-white">✕</button>
             </div>
-            <div className="aspect-video w-full bg-black relative">
-              <video
-                src={modalVideo.videoUrl}
-                controls
-                autoPlay
-                className="w-full h-full object-cover"
-              />
+            <div className="relative aspect-video w-full bg-black">
+              <video src={modalVideo.videoUrl} controls autoPlay className="h-full w-full object-cover" />
             </div>
-            <div className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#050608]">
-              <p className="text-xs sm:text-sm text-slate-300 max-w-lg">{modalVideo.desc}</p>
-              <button
-                onClick={() => {
-                  setModalVideo(null);
-                  handleStartCreating();
-                }}
-                className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-indigo-600/30"
-              >
-                Create Similar Production
-              </button>
+            <div className="flex flex-col items-start justify-between gap-4 bg-[#050608] p-6 sm:flex-row sm:items-center">
+              <p className="max-w-lg text-xs text-slate-300 sm:text-sm">{modalVideo.desc}</p>
+              <button onClick={() => { setModalVideo(null); handleStartCreating(); }} className="rounded-xl bg-indigo-600 px-6 py-3 text-xs font-bold text-white shadow-xl shadow-indigo-600/30 transition-colors hover:bg-indigo-500 sm:text-sm">Create similar production</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ─── FAQ ────────────────────────────────────────────────── */}
-      <section id="faq" className="py-28 bg-[#07080e] border-t border-white/5">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">Frequently Asked Questions</span>
-            <h2 className="font-display text-4xl sm:text-6xl font-black text-white mt-3 mb-6">
-              Everything You Need to Know
-            </h2>
+      <section id="faq" className="border-t border-white/5 bg-[#07080e] py-28">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mb-20 text-center">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400">Frequently asked questions</span>
+            <h2 className="mt-3 mb-6 font-display text-4xl font-black text-white sm:text-6xl">Everything you need to know.</h2>
           </div>
 
           <div className="space-y-4">
             {faqs.map((faq, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden transition-all duration-300"
-              >
-                <button
-                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                  className="w-full p-6 text-left flex justify-between items-center font-bold text-white text-base sm:text-xl"
-                >
+              <div data-reveal key={idx} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all duration-300">
+                <button onClick={() => setActiveFaq(activeFaq === idx ? null : idx)} className="flex w-full items-center justify-between p-6 text-left font-bold text-white text-base sm:text-xl">
                   <span>{faq.q}</span>
-                  <ChevronDown className={`w-5 h-5 text-indigo-400 transition-transform duration-300 ${activeFaq === idx ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-5 w-5 text-indigo-400 transition-transform duration-300 ${activeFaq === idx ? 'rotate-180' : ''}`} />
                 </button>
-                {activeFaq === idx && (
-                  <div className="px-6 pb-6 text-slate-300 text-sm sm:text-base leading-relaxed border-t border-white/5 pt-4">
-                    {faq.a}
-                  </div>
-                )}
+                {activeFaq === idx && <div className="border-t border-white/5 px-6 pb-6 pt-4 text-sm leading-relaxed text-slate-300 sm:text-base">{faq.a}</div>}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── CTA SECTION ────────────────────────────────────────── */}
-      <section className="py-28 relative overflow-hidden z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <div className="p-12 sm:p-20 rounded-3xl bg-gradient-to-b from-[#10111f] to-[#07080e] border border-indigo-500/40 shadow-2xl shadow-indigo-600/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
-
-            <h2 className="font-display text-4xl sm:text-7xl font-black text-white mb-6 leading-tight">
-              Your Next Story Starts Here.
-            </h2>
-            <p className="text-slate-300 text-lg sm:text-2xl max-w-2xl mx-auto mb-12">
-              Release Your Vision Into Action with REYVIA Studio.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-              <button
-                onClick={handleStartCreating}
-                className="w-full sm:w-auto px-10 py-4.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 text-white font-bold text-base shadow-2xl shadow-indigo-600/40 hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-5 h-5 text-amber-300" />
-                <span>Start Creating</span>
+      <section className="relative z-10 overflow-hidden py-28">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
+          <div data-reveal className="relative overflow-hidden rounded-3xl border border-indigo-500/40 bg-gradient-to-b from-[#10111f] to-[#07080e] p-12 shadow-2xl shadow-indigo-600/20 sm:p-20">
+            <div className="pointer-events-none absolute right-0 top-0 h-96 w-96 rounded-full bg-indigo-600/15 blur-3xl" />
+            <h2 className="mb-6 font-display text-4xl font-black leading-tight text-white sm:text-7xl">Your next story starts here.</h2>
+            <p className="mx-auto mb-12 max-w-2xl text-lg text-slate-300 sm:text-2xl">Release your vision into action with REYVIA Studio.</p>
+            <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
+              <button onClick={handleStartCreating} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 px-10 py-4.5 text-base font-bold text-white shadow-2xl shadow-indigo-600/40 transition-all hover:scale-[1.03] active:scale-[0.98] sm:w-auto">
+                <Sparkles className="h-5 w-5 text-amber-300" />
+                <span>Start creating</span>
               </button>
-              <button
-                onClick={handleExploreStudio}
-                className="w-full sm:w-auto px-10 py-4.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-base transition-all"
-              >
-                Explore REYVIA Studio
-              </button>
+              <button onClick={handleExploreStudio} className="w-full rounded-2xl border border-white/15 bg-white/5 px-10 py-4.5 text-base font-bold text-slate-200 transition-all hover:bg-white/10 sm:w-auto">Explore REYVIA Studio</button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── FOOTER ────────────────────────────────────────────── */}
-      <footer className="py-16 bg-[#040508] border-t border-white/10 text-slate-400 text-sm relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-600/30">
-                <Clapperboard className="w-5 h-5" />
-              </div>
-              <span className="font-display text-xl font-black text-white">REYVIA Studio</span>
+      <footer className="relative z-10 border-t border-white/10 bg-[#040508] py-16 text-sm text-slate-400">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 sm:px-6 lg:flex-row lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+              <Clapperboard className="h-5 w-5" />
             </div>
-            <div className="text-xs text-slate-500">
-              © {new Date().getFullYear()} REYVIA Studio. Release Your Vision Into Action.
-            </div>
+            <span className="font-display text-xl font-black text-white">REYVIA Studio</span>
           </div>
+          <div className="text-xs text-slate-500">© {new Date().getFullYear()} REYVIA Studio. Release your vision into action.</div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function LogoMark({ className = '' }) {
+  return (
+    <div className={`relative inline-flex items-center justify-center ${className}`}>
+      <svg viewBox="0 0 64 64" className="h-full w-full" role="img" aria-label="Reyvia logo">
+        <defs>
+          <linearGradient id="reyviaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8b5cf6" />
+            <stop offset="55%" stopColor="#6d7cff" />
+            <stop offset="100%" stopColor="#f6c76b" />
+          </linearGradient>
+        </defs>
+        <rect x="7" y="7" width="50" height="50" rx="16" fill="rgba(15,18,28,0.95)" stroke="url(#reyviaGradient)" strokeWidth="1.4" />
+        <path d="M20 18v28M20 18h16c10 0 15 5 15 14s-5 14-15 14H20" stroke="url(#reyviaGradient)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M35 29H46" stroke="#f5d481" strokeWidth="3.5" strokeLinecap="round" />
+        <path d="M23 46L36 18" stroke="#edf4ff" strokeOpacity="0.72" strokeWidth="2" strokeLinecap="round" />
+      </svg>
     </div>
   );
 }
