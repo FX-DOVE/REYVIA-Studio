@@ -488,7 +488,12 @@ export default function LandingPage() {
               { icon: Sliders, title: 'Direct', subtitle: 'Full shot control', desc: 'Shape camera movement, lighting mood, character behavior, and scene rhythm with tactile creative controls.' },
               { icon: Film, title: 'Produce', subtitle: 'Cinematic output', desc: 'Merge shots into polished sequences ready for release with cinematic grading, continuity, and export workflows.' }
             ].map((item, idx) => (
-              <div data-reveal key={idx} className="group min-w-0 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-8 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-indigo-500/50 hover:shadow-indigo-500/10 sm:p-10">
+              <div
+                data-reveal
+                key={idx}
+                style={{ transitionDelay: `${idx * 100}ms` }}
+                className="group min-w-0 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-8 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-indigo-500/50 hover:shadow-indigo-500/10 sm:p-10"
+              >
                 <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-500/10 transition-transform duration-300 group-hover:scale-110">
                   <item.icon className="h-7 w-7 text-indigo-400" />
                 </div>
@@ -515,7 +520,7 @@ export default function LandingPage() {
               { phase: 'Phase 02', title: 'Shot craft', items: ['Direct framing, depth, motion, and lens behavior.', 'Preserve character continuity across every scene.', 'Iterate quickly without losing creative intent.'], icon: Camera },
               { phase: 'Phase 03', title: 'Final cut', items: ['Assemble scenes into a rhythmic cinematic sequence.', 'Polish sound, pacing, and visual grading for release.', 'Deliver a premium final product on a modern production timeline.'], icon: Film }
             ].map((card, idx) => (
-              <div data-reveal key={idx} className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+              <div data-reveal key={idx} style={{ transitionDelay: `${idx * 110}ms` }} className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.02] p-6">
                 <div className="mb-6 flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-500/10"><card.icon className="h-5 w-5 text-indigo-300" /></div>
                   <div>
@@ -550,8 +555,8 @@ export default function LandingPage() {
           </div>
 
           <div className="mobile-card-grid grid grid-cols-1 gap-8 md:grid-cols-3">
-            {filteredShowcase.map((item) => (
-              <div data-reveal key={item.id} onClick={() => setModalVideo(item)} className="group min-w-0 cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-[#0c0d16] shadow-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-indigo-500/60">
+            {filteredShowcase.map((item, idx) => (
+              <div data-reveal key={item.id} onClick={() => setModalVideo(item)} style={{ transitionDelay: `${idx * 100}ms` }} className="group min-w-0 cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-[#0c0d16] shadow-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-indigo-500/60">
                 <div className="relative aspect-video w-full overflow-hidden">
                   <img src={item.poster} alt={item.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
@@ -601,7 +606,7 @@ export default function LandingPage() {
 
           <div className="space-y-4">
             {faqs.map((faq, idx) => (
-              <div data-reveal key={idx} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all duration-300">
+              <div data-reveal key={idx} style={{ transitionDelay: `${idx * 80}ms` }} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all duration-300">
                 <button onClick={() => setActiveFaq(activeFaq === idx ? null : idx)} className="flex w-full items-center justify-between p-6 text-left font-bold text-white text-base sm:text-xl">
                   <span>{faq.q}</span>
                   <ChevronDown className={`h-5 w-5 text-indigo-400 transition-transform duration-300 ${activeFaq === idx ? 'rotate-180' : ''}`} />
